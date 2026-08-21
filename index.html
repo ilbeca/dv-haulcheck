@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haulcheck — will this train climb that grade?</title>
+<meta name="description" content="Tractive effort, adhesion and heat calculator for Derail Valley consists. Unofficial fan tool.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead__plate">
+    <span class="masthead__eyebrow">DVRT · unofficial</span>
+    <h1 class="masthead__title">Haulcheck</h1>
+  </div>
+  <p class="masthead__lede">
+    You are about to leave the yard with a train behind you and a hill in front of you.
+    This works out whether you make it, and if not, which of the three things stops you:
+    running out of pull, running out of grip, or cooking the engine.
+  </p>
+</header>
+
+<main class="layout">
+
+  <!-- ---------- the sign: primary control ---------- -->
+  <section class="panel panel--sign" aria-labelledby="h-grade">
+    <h2 id="h-grade" class="panel__title">The grade</h2>
+
+    <div class="signpost">
+      <div class="sign" id="sign" data-state="up">
+        <div class="sign__blue"></div>
+        <div class="sign__face">
+          <svg class="sign__slope" viewBox="0 0 100 100" aria-hidden="true">
+            <line id="slopeLine" x1="12" y1="76" x2="88" y2="24"/>
+          </svg>
+          <span class="sign__number" id="signNumber">+2.0</span>
+        </div>
+      </div>
+      <div class="signpost__pole"></div>
+    </div>
+
+    <label class="field field--wide">
+      <span class="field__label">Ruling grade</span>
+      <input type="range" id="grade" min="-4" max="4" step="0.1" value="2.0">
+      <span class="field__hint">The steepest grade that runs long enough to matter. A short spike you carry momentum over is not a ruling grade.</span>
+    </label>
+
+    <div class="grid-2">
+      <label class="field">
+        <span class="field__label">Climb speed <span class="unit">km/h</span></span>
+        <input type="number" id="speed" min="3" max="120" step="1" value="25">
+      </label>
+      <label class="field">
+        <span class="field__label">Climb length <span class="unit">m</span></span>
+        <input type="number" id="climbLength" min="0" step="50" value="800">
+      </label>
+      <label class="field">
+        <span class="field__label">Speed at the foot <span class="unit">km/h</span></span>
+        <input type="number" id="entrySpeed" min="0" max="120" step="1" value="40">
+      </label>
+      <label class="field">
+        <span class="field__label">Tightest curve <span class="unit">m radius</span></span>
+        <input type="number" id="radius" min="0" step="10" value="0" placeholder="0 = straight">
+      </label>
+    </div>
+
+    <details class="drawer">
+      <summary class="drawer__summary">Paste a profile from the community map instead</summary>
+      <p class="drawer__note">One segment per line: grade, length in metres, and optionally the curve radius. Haulcheck picks the ruling grade and the worst descent out of it.</p>
+      <textarea id="profile" rows="5" spellcheck="false" placeholder="# out of the harbour&#10;+2.1 600&#10;-1.4 900 450&#10;+0.4 1200"></textarea>
+      <button type="button" id="applyProfile" class="btn">Read the profile</button>
+      <p class="drawer__result" id="profileResult" role="status"></p>
+    </details>
+  </section>
+
+  <!-- ---------- the train ---------- -->
+  <section class="panel" aria-labelledby="h-train">
+    <h2 id="h-train" class="panel__title">The train</h2>
+
+    <div class="stack" id="locoList"></div>
+    <button type="button" id="addLoco" class="btn btn--ghost">Add a locomotive</button>
+
+    <div class="rule"></div>
+
+    <div class="segmented" role="group" aria-label="How to enter trailing mass">
+      <button type="button" class="segmented__btn is-active" data-mode="direct">From the booklet</button>
+      <button type="button" class="segmented__btn" data-mode="build">Build a consist</button>
+    </div>
+
+    <div id="modeDirect">
+      <label class="field">
+        <span class="field__label">Trailing mass <span class="unit">t</span></span>
+        <input type="number" id="trailingMass" min="0" step="10" value="400">
+        <span class="field__hint">The job booklet states this. Use it — it beats any estimate.</span>
+      </label>
+      <label class="field">
+        <span class="field__label">Train length behind the locos <span class="unit">m, optional</span></span>
+        <input type="number" id="trailingLength" min="0" step="10" value="0" placeholder="0 = skip the fit check">
+      </label>
+    </div>
+
+    <div id="modeBuild" hidden>
+      <div class="stack" id="carList"></div>
+      <button type="button" id="addCar" class="btn btn--ghost">Add cars</button>
+      <p class="tally" id="carTally">Nothing coupled up yet.</p>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="toggles">
+      <label class="toggle"><input type="checkbox" id="wet"> <span>Wet rail</span></label>
+      <label class="toggle"><input type="checkbox" id="sand" checked> <span>Sanding</span></label>
+    </div>
+
+    <label class="field">
+      <span class="field__label">Destination track length <span class="unit">m, optional</span></span>
+      <input type="number" id="trackLength" min="0" step="10" value="0" placeholder="0 = skip the fit check">
+      <span class="field__hint">Arriving with a train that will not fit on the siding is its own kind of stuck.</span>
+    </label>
+  </section>
+
+  <!-- ---------- verdict ---------- -->
+  <section class="panel panel--verdict" aria-labelledby="h-verdict">
+    <h2 id="h-verdict" class="panel__title">The answer</h2>
+
+    <div class="verdict" id="verdict" data-verdict="comfortable">
+      <p class="verdict__call" id="verdictCall">—</p>
+      <p class="verdict__because" id="verdictBecause"></p>
+    </div>
+
+    <div class="forces" aria-hidden="true">
+      <div class="forces__track">
+        <div class="forces__need" id="barNeed"><span id="barNeedLabel"></span></div>
+      </div>
+      <div class="forces__marks">
+        <span class="forces__mark" id="markEngine">engine</span>
+        <span class="forces__mark forces__mark--grip" id="markGrip">grip</span>
+      </div>
+    </div>
+
+    <dl class="readout" id="readout"></dl>
+
+    <div class="notes" id="notes"></div>
+
+    <button type="button" id="copyLink" class="btn btn--ghost">Copy a link to this setup</button>
+  </section>
+
+  <!-- ---------- what else fits ---------- -->
+  <section class="panel" aria-labelledby="h-alt">
+    <h2 id="h-alt" class="panel__title">What else would do it</h2>
+    <p class="panel__note">Cheapest licence first, because every licence you buy permanently raises your copay and shortens the time bonus. The smallest locomotive that clears the job is usually the right one.</p>
+    <ul class="options" id="options"></ul>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <p><strong>Haulcheck</strong> is a fan work. Derail Valley is owned by Altfuture and this tool is not affiliated with or endorsed by them.</p>
+  <p>Resistance is computed from ordinary railway physics. Tractive effort is not invented: each locomotive is back-calculated from a load it is measured to actually haul. <a href="https://github.com/ilbeca/dv-haulcheck#how-it-works">How it works and where the numbers come from</a>.</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

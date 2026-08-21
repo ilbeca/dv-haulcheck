@@ -1,0 +1,18 @@
+{
+  "note": "Tare masses are the empty car. Loaded mass depends entirely on the cargo, and the job booklet already states the exact total train mass, so prefer typing that number in directly. This table exists for the case where you are assembling a consist that does not yet have a booklet. typicalLoad_t is a rough working figure, not a game constant.",
+  "confidence": "medium",
+  "cars": [
+    { "id": "flatbed",   "name": "Flatbed",           "tare_t": 11, "length_m": 18.045, "typicalLoad_t": 25 },
+    { "id": "flatbed_mil","name": "Military flatcar", "tare_t": 11, "length_m": 18.045, "typicalLoad_t": 30 },
+    { "id": "stake",     "name": "Stake car",         "tare_t": 15, "length_m": 18.045, "typicalLoad_t": 30 },
+    { "id": "boxcar",    "name": "Boxcar",            "tare_t": 20, "length_m": 14.12,  "typicalLoad_t": 25 },
+    { "id": "reefer",    "name": "Refrigerator car",  "tare_t": 21, "length_m": 14.12,  "typicalLoad_t": 25 },
+    { "id": "tank",      "name": "Tank car",          "tare_t": 21, "length_m": 14.523, "typicalLoad_t": 35 },
+    { "id": "hopper",    "name": "Hopper",            "tare_t": 24, "length_m": 18.23,  "typicalLoad_t": 45 },
+    { "id": "gondola",   "name": "Gondola",           "tare_t": 22, "length_m": 14.0,   "typicalLoad_t": 40 },
+    { "id": "autorack",  "name": "Autorack",          "tare_t": 22, "length_m": 18.0,   "typicalLoad_t": 20 },
+    { "id": "nuclear",   "name": "Nuclear flask",     "tare_t": 30, "length_m": 14.0,   "typicalLoad_t": 50 },
+    { "id": "caboose",   "name": "Caboose",           "tare_t": 15, "length_m": 9.0,    "typicalLoad_t": 0 },
+    { "id": "passenger", "name": "Passenger car",     "tare_t": 32, "length_m": 24.5,   "typicalLoad_t": 5 }
+  ]
+}
