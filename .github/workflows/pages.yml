@@ -5,21 +5,38 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
+  # The gate. A broken dataset does not break the page in any way a visitor
+  # would notice — the site loads and serves wrong numbers — so the suite has
+  # to run before the artifact is built, not merely alongside it.
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run the full suite
+        run: node --test test/*.test.mjs
+
   deploy:
+    # `needs` only reaches across jobs within one workflow, which is why the
+    # suite is repeated here rather than depended upon from test.yml.
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
