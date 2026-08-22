@@ -1,0 +1,90 @@
+name: build-watch
+
+# The failure mode this guards against is silence: the game ships a new build,
+# the figures quietly stop describing it, and the site keeps answering with
+# the same confidence as before. Nobody gets an error to investigate.
+
+on:
+  schedule:
+    # Monday morning, so a new build found over the weekend is waiting at the
+    # start of the week rather than a week later.
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - id: check
+        name: Compare the declared build against the changelog
+        run: node tools/check-build.mjs
+
+      - name: Open an issue when the game has moved on
+        if: steps.check.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.check.outputs.latest }}
+          CURRENT: ${{ steps.check.outputs.current }}
+        run: |
+          set -euo pipefail
+
+          # One open issue at a time. A sentinel that files the same report
+          # every Monday trains you to ignore it.
+          open=$(gh issue list --label game-build --state open --json number --jq 'length')
+          if [ "$open" != "0" ]; then
+            echo "An issue with the game-build label is already open; saying nothing."
+            exit 0
+          fi
+
+          gh label create game-build \
+            --description "The dataset describes an older build of the game" \
+            --color 'e4a928' 2>/dev/null || true
+
+          cat > body.md <<'BODY'
+          `data/locomotives.json` declares `gameBuild: "__CURRENT__"`, but the
+          changelog now lists **build __LATEST__**.
+
+          ### What this does and does not mean
+
+          It does not mean the figures are wrong. It means nobody has checked
+          them against this build yet, and the dataset no longer states what it
+          was verified against.
+
+          ### Before changing anything
+
+          `gameBuild` is a claim about what was verified, not a version label.
+          Bumping it without re-checking the figures converts an honest
+          "unverified" into a false "verified", which is the one outcome worse
+          than being out of date.
+
+          Re-check in game against the reference climbs in `DATA-SOURCES.md`,
+          then update the figures that moved, `gameBuild`, and the provenance
+          notes together in one change. The closure test in
+          `test/physics.test.mjs` must still land on exactly 1.0 afterwards.
+
+          If the figures are unchanged, say so in `DATA-SOURCES.md` and move
+          `gameBuild` on its own — that is a verification too, and worth
+          recording.
+
+          ---
+          <sub>Opened automatically by `build-watch`. Closing it without
+          re-checking is a legitimate decision; leaving it open is not a
+          reminder that anything is broken.</sub>
+          BODY
+
+          sed -i "s/__CURRENT__/${CURRENT}/g; s/__LATEST__/${LATEST}/g" body.md
+          sed -i 's/^          //' body.md
+
+          gh issue create \
+            --title "Derail Valley is on build ${LATEST}; the dataset describes ${CURRENT}" \
+            --label game-build \
+            --body-file body.md
