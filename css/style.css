@@ -532,3 +532,30 @@ input[type="range"] {
 }
 
 .colophon p { max-width: 70ch; margin: 0 0 0.5rem; }
+
+/* ---------- touch targets ---------- */
+
+/* The person using this is on a phone, one hand on the glass, with a loaded
+   train stopped on a grade. The range input is the primary control of the
+   whole page and native styling gives it a 16px hit area, which is not
+   something you can place while the cab is rocking.
+
+   Scoped to coarse pointers so the desktop layout is untouched. Nothing here
+   changes how anything looks — only how big it is to hit. */
+@media (pointer: coarse) {
+  input[type="range"] { min-height: 44px; }
+
+  select,
+  input[type="number"] { min-height: 44px; }
+
+  .btn,
+  .segmented__btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* The checkbox itself stays small; the label around it is the real target. */
+  .toggle { padding: 0.7rem 0; }
+}
