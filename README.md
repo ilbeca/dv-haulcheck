@@ -4,9 +4,18 @@
 
 **→ [Open Haulcheck](https://ilbeca.github.io/dv-haulcheck/)**
 
+[![test](https://github.com/ilbeca/dv-haulcheck/actions/workflows/test.yml/badge.svg)](https://github.com/ilbeca/dv-haulcheck/actions/workflows/test.yml)
+[![deploy](https://github.com/ilbeca/dv-haulcheck/actions/workflows/pages.yml/badge.svg)](https://github.com/ilbeca/dv-haulcheck/actions/workflows/pages.yml)
+[![build-watch](https://github.com/ilbeca/dv-haulcheck/actions/workflows/build-watch.yml/badge.svg)](https://github.com/ilbeca/dv-haulcheck/actions/workflows/build-watch.yml)
+
 No install, no mod, nothing to keep in sync with the game. Open the page, pick your locomotives, type the tonnage off the job booklet, set the grade, get an answer — and, more usefully, get told *which* of the three things is about to stop you.
 
 > Unofficial fan work. Derail Valley is owned by Altfuture. Not affiliated with or endorsed by them.
+
+There is no backend. The arithmetic runs in your browser, GitHub Pages serves
+the files, and Actions does the rest: it runs the tests, refuses to publish a
+commit that fails them, and once a week checks whether Derail Valley has
+shipped a build newer than the one the data claims to describe.
 
 ---
 
