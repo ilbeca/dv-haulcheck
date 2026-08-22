@@ -1,0 +1,6 @@
+# Dove guardare, per il controllo condiviso Standards/tools/check_docs_current.py.
+#
+# Questo progetto non ha un servizio, un database, un'API ne' un CHANGELOG:
+# dichiara solo i file che affermano qualcosa, e le altre asserzioni si saltano
+# da sole invece di fallire.
+skills: [CLAUDE.md, README.md, CONTRIBUTING.md, DATA-SOURCES.md]
