@@ -13,6 +13,22 @@ licences apply to their own directories.
 
 Derail Valley is owned by Altfuture. This project is unofficial and unaffiliated.
 
+## Which build these figures describe
+
+`data/locomotives.json` carries a `gameBuild` field. It currently reads
+`"99.x"`, meaning the figures were checked against build 99 and are held to
+apply across its point releases.
+
+Read it as a statement about what was verified, not as a version label. A
+scheduled workflow (`build-watch`) compares it against the public changelog
+every Monday and opens an issue when the game has moved on; it never edits the
+data, because whether a figure still holds is a judgement about the game.
+
+Moving `gameBuild` without re-checking the figures it covers converts an honest
+"unverified" into a false "verified", which is worse than being out of date. If
+a re-check finds nothing changed, say so here and move the field on its own —
+a verification that found no change is still a verification.
+
 ## Field provenance
 
 | Field | Source | Confidence |

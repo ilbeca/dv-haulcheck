@@ -26,8 +26,14 @@ the calibration closure test will pick it up automatically — if your entry is
 internally inconsistent, that test will fail, which is the point.
 
 ```bash
-node --test test/physics.test.mjs
+node --test test/*.test.mjs
 ```
+
+That runs both suites. `physics.test.mjs` asks whether the model is right;
+`sanity.test.mjs` asks whether the site would still work if we published the
+repository as it stands — parseable data, unique ids, the fields the model
+reads, and no reference to a file that is not there. The deploy will not
+publish a commit that fails either.
 
 ## Adding a locomotive
 
