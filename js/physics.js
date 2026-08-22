@@ -354,7 +354,14 @@ export function assessClimb({
     specificResistance_N_per_t: specific,
     margin,
     verdict,
-    limitedBy: heat.level === 'overheat' && limitedBy === 'power' ? 'heat' : limitedBy,
+    /**
+     * Heat only takes the blame when there was pull to spare in the first
+     * place. Utilisation is required/engine, so it exceeds 1 whenever the
+     * force is short — without the margin check, every power stall would be
+     * reported as an overheat, and the tool would advise going faster to cool
+     * a train that cannot hold the speed it is already at.
+     */
+    limitedBy: heat.level === 'overheat' && limitedBy === 'power' && margin >= 1 ? 'heat' : limitedBy,
     heat,
     stallDistance_m,
     stallTime_s,

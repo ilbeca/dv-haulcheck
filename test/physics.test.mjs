@@ -206,6 +206,30 @@ test('the classic beginner failure is diagnosed as heat, not lack of pull', () =
   assert.ok(grinding.heat.speedToClearHeat_kmh > 20);
 });
 
+test('a train short of pull is not blamed on cooling', () => {
+  // The page opens on this case: a DE2 with 400 t on 2%. It needs 97 kN and
+  // makes 90, so what stops it is force, full stop.
+  //
+  // Heat utilisation is required/engine, which exceeds 1 whenever the force is
+  // short. Without a margin check every power stall reads as an overheat, and
+  // the tool ends up advising a run-up to cool a train that cannot hold the
+  // speed it is already at — the opposite of the advice that helps.
+  const summary = summariseLocos([{ loco: byId('DE2'), powered: true }], { sand: true });
+  const stalling = assessClimb({
+    locoSummary: summary,
+    trailingMass_t: 400,
+    grade_pct: 2.0,
+    speed_kmh: 25,
+    entrySpeed_kmh: 40,
+    climbLength_m: 800
+  });
+
+  assert.ok(stalling.margin < 1, 'this load is beyond the DE2 on this grade');
+  assert.equal(stalling.verdict, 'stalls');
+  assert.equal(stalling.limitedBy, 'power');
+  assert.ok(stalling.heat.index > 1, 'the heat index is high here, but it is not the binding limit');
+});
+
 test('actively cooled locomotives are not penalised for climbing slowly', () => {
   const slowDe6 = assessClimb({
     locoSummary: summariseLocos([{ loco: byId('DE6'), powered: true }]),
