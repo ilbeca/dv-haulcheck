@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <title>Haulcheck</title>
+  <!-- The gradient sign, stripped to what survives at 16px: the blue third,
+       the yellow face, the climb. The number does not survive, so it goes. -->
+  <rect width="32" height="32" rx="4" fill="#0b0d10"/>
+  <rect x="3" y="3" width="9" height="26" fill="#103a5e"/>
+  <rect x="12" y="3" width="17" height="26" fill="#e4a928"/>
+  <line x1="14" y1="25" x2="27" y2="8" stroke="#0b0d10" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+</svg>
