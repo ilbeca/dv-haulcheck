@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not on the map — Haulcheck</title>
+<meta name="robots" content="noindex">
+
+<!-- Pages serves this file for any missing path, however deep. Without a base
+     the relative links below would resolve against that path and the page
+     would arrive unstyled. -->
+<base href="/dv-haulcheck/">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead__plate">
+    <span class="masthead__eyebrow">DVRT · unofficial</span>
+    <h1 class="masthead__title">Haulcheck</h1>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel">
+    <h2 class="panel__title">Not on the map</h2>
+
+    <div class="signpost">
+      <div class="sign" data-state="down">
+        <div class="sign__blue"></div>
+        <div class="sign__face">
+          <svg class="sign__slope" viewBox="0 0 100 100" aria-hidden="true">
+            <line x1="12" y1="24" x2="88" y2="76"/>
+          </svg>
+          <span class="sign__number">404</span>
+        </div>
+      </div>
+      <div class="signpost__pole"></div>
+    </div>
+
+    <p>There is no page at that address. Nothing is broken — you have simply
+      run out of track.</p>
+
+    <p><a href="./">Back to the calculator</a></p>
+  </section>
+</main>
+
+</body>
+</html>
